@@ -33,12 +33,12 @@ export const useAccountStore = create<AccountState>()(
         {
           id: "main",
           name: "Conta Principal",
-          balance: 4580.75,
+          balance: 100000.75,
           transactions: [
             {
               id: 1,
               type: "income",
-              amount: 1200,
+              amount: 12000,
               description: "PIX recebido",
             },
             {
