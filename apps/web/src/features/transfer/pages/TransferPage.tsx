@@ -5,20 +5,24 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 const transferSchema = z.object({
   amount: z.number().min(0.01, "Valor deve ser maior que 0"),
   description: z.string().min(1, "Descrição é obrigatória"),
+  toAccountId: z.string().min(1, "Selecione uma conta de destino"),
 });
 
 type TransferForm = z.infer<typeof transferSchema>;
 
 export function TransferPage() {
-  const transfer = useAccountStore((s) => s.transfer);
+  const { transfer, accounts, currentAccountId } = useAccountStore();
   const navigate = useNavigate();
 
+  const availableAccounts = accounts.filter(a => a.id !== currentAccountId);
+
   function onSubmit(data: TransferForm) {
-    transfer(data.amount, data.description);
+    transfer(data.amount, data.description, data.toAccountId);
     navigate("/dashboard");
   }
 
@@ -31,7 +35,7 @@ export function TransferPage() {
         <CardContent>
           <Form
             schema={transferSchema}
-            defaultValues={{ amount: 0, description: "" }}
+            defaultValues={{ amount: 0, description: "", toAccountId: "" }}
             onSubmit={onSubmit}
           >
             <FormField
@@ -61,6 +65,29 @@ export function TransferPage() {
                     <Input id="description" {...field} />
                   </FormControl>
                   <FormMessage name="description" />
+                </FormItem>
+              )}
+            />
+            <FormField
+              name="toAccountId"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Conta de Destino</FormLabel>
+                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Selecione uma conta" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {availableAccounts.map((account) => (
+                        <SelectItem key={account.id} value={account.id}>
+                          {account.name} - Saldo: R$ {account.balance.toFixed(2)}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage name="toAccountId" />
                 </FormItem>
               )}
             />

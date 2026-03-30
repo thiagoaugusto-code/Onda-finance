@@ -1,5 +1,5 @@
 import * as React from "react";
-import { useForm, type SubmitHandler, FormProvider, useController, useFormContext } from "react-hook-form";
+import { useForm, FormProvider, useController, useFormContext } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { cn } from "@/lib/utils";
@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils";
 type FormProps = {
   schema: z.ZodSchema;
   defaultValues?: Record<string, any>;
-  onSubmit: SubmitHandler<Record<string, any>>;
+  onSubmit: (data: any) => void;
   children: React.ReactNode;
 };
 
@@ -83,7 +83,7 @@ type FormMessageProps = {
 export function FormMessage({ name, className }: FormMessageProps) {
   const { formState: { errors } } = useFormContext();
   const error = errors?.[name];
-  if (!error) return null;
+  if (!error || typeof error !== 'object' || !('message' in error) || typeof error.message !== 'string') return null;
   return (
     <p className={cn("text-sm font-medium text-destructive", className)}>
       {error.message}
