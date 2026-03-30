@@ -22,5 +22,16 @@
   "workspaces": [
     "apps/*",
     "packages/*"
-  ]
+  ],
+  "dependencies": {
+    "@hookform/resolvers": "^5.2.2",
+    "@tanstack/react-query": "^5.95.2",
+    "axios": "^1.14.0",
+    "class-variance-authority": "^0.7.1",
+    "lucide-react": "^1.7.0",
+    "react-hook-form": "^7.72.0",
+    "react-router-dom": "^7.13.2",
+    "zod": "^4.3.6",
+    "zustand": "^5.0.12"
+  }
 }
