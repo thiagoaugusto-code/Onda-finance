@@ -10,7 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 const transferSchema = z.object({
   amount: z.number().min(0.01, "Valor deve ser maior que 0"),
   description: z.string().min(1, "Descrição é obrigatória"),
-  toAccountId: z.string().optional(), // Torna opcional quando há apenas uma conta
+  toAccountId: z.string().min(1, "Selecione uma conta de destino"),
 });
 
 type TransferForm = z.infer<typeof transferSchema>;
@@ -20,15 +20,9 @@ export function TransferPage() {
   const navigate = useNavigate();
 
   const availableAccounts = accounts.filter(a => a.id !== currentAccountId);
-  const hasSingleDestination = availableAccounts.length === 1;
-  const defaultDestinationAccount = hasSingleDestination ? availableAccounts[0] : null;
 
   function onSubmit(data: TransferForm) {
-    const destinationAccountId = hasSingleDestination
-      ? defaultDestinationAccount!.id
-      : data.toAccountId!;
-
-    transfer(data.amount, data.description, destinationAccountId);
+    transfer(data.amount, data.description, data.toAccountId);
     navigate("/dashboard");
   }
 
@@ -81,42 +75,39 @@ export function TransferPage() {
               )}
             />
 
-            {hasSingleDestination ? (
-              <div className="space-y-2">
-                <FormLabel className="text-gray-700 font-semibold">Conta de Destino</FormLabel>
-                <div className="h-12 px-4 py-3 bg-gray-50 border-2 border-gray-200 rounded-lg text-gray-700 text-lg flex items-center">
-                  <div className="flex items-center space-x-2">
-                    <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
-                    <span>{defaultDestinationAccount!.name} - Saldo: R$ {defaultDestinationAccount!.balance.toFixed(2)}</span>
-                  </div>
-                </div>
-                <p className="text-sm text-gray-500">Transferência será feita para esta conta automaticamente</p>
-              </div>
-            ) : (
-              <FormField
-                name="toAccountId"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-gray-700 font-semibold">Conta de Destino</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
-                      <FormControl>
-                        <SelectTrigger className="h-12 text-lg border-2 border-gray-200 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200">
-                          <SelectValue placeholder="Selecione uma conta" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {availableAccounts.map((account) => (
-                          <SelectItem key={account.id} value={account.id} className="text-lg py-3">
-                            {account.name} - Saldo: R$ {account.balance.toFixed(2)}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage name="toAccountId" />
-                  </FormItem>
-                )}
-              />
-            )}
+            <FormField
+              name="toAccountId"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-gray-700 font-semibold">Conta de Destino</FormLabel>
+                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <FormControl>
+                      <SelectTrigger className="h-12 text-lg border-2 border-gray-200 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200 hover:border-blue-400">
+                        <SelectValue placeholder="Selecione uma conta de destino" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent className="bg-white border-2 border-gray-200 shadow-xl">
+                      {availableAccounts.map((account) => (
+                        <SelectItem
+                          key={account.id}
+                          value={account.id}
+                          className="text-lg py-3 px-4 hover:bg-blue-50 focus:bg-blue-50 cursor-pointer transition-colors duration-150"
+                        >
+                          <div className="flex items-center space-x-3">
+                            <div className="w-3 h-3 bg-blue-500 rounded-full flex-shrink-0"></div>
+                            <div className="flex flex-col">
+                              <span className="font-medium text-gray-900">{account.name}</span>
+                              <span className="text-sm text-gray-500">Saldo: R$ {account.balance.toFixed(2)}</span>
+                            </div>
+                          </div>
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage name="toAccountId" />
+                </FormItem>
+              )}
+            />
             <div className="pt-4">
               <Button
                 type="submit"
