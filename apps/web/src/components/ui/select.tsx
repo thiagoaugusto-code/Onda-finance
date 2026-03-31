@@ -4,12 +4,14 @@ import { Select as SelectPrimitive } from "radix-ui"
 import { cn } from "@/lib/utils"
 import { ChevronDownIcon, CheckIcon, ChevronUpIcon } from "lucide-react"
 
+// Componente raiz do Select - wrapper para Radix UI Select
 function Select({
   ...props
 }: React.ComponentProps<typeof SelectPrimitive.Root>) {
   return <SelectPrimitive.Root data-slot="select" {...props} />
 }
 
+// Grupo de opções do Select
 function SelectGroup({
   className,
   ...props
@@ -23,12 +25,14 @@ function SelectGroup({
   )
 }
 
+// Componente que exibe o valor selecionado
 function SelectValue({
   ...props
 }: React.ComponentProps<typeof SelectPrimitive.Value>) {
   return <SelectPrimitive.Value data-slot="select-value" {...props} />
 }
 
+// Botão trigger do dropdown - onde o usuário clica para abrir as opções
 function SelectTrigger({
   className,
   size = "default",
@@ -55,6 +59,7 @@ function SelectTrigger({
   )
 }
 
+// Container do dropdown com as opções - Z-INDEX AJUSTADO PARA z-[100] para evitar sobreposição
 function SelectContent({
   className,
   children,
@@ -138,6 +143,7 @@ function SelectSeparator({
   )
 }
 
+// Botão de scroll para cima quando há muitas opções - Z-INDEX AJUSTADO PARA z-[100]
 function SelectScrollUpButton({
   className,
   ...props
@@ -156,6 +162,7 @@ function SelectScrollUpButton({
   )
 }
 
+// Botão de scroll para baixo quando há muitas opções - Z-INDEX AJUSTADO PARA z-[100]
 function SelectScrollDownButton({
   className,
   ...props
