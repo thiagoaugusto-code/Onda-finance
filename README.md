@@ -11,7 +11,7 @@ A ideia é permitir que o usuário faça login, visualize seus saldos e transaç
 
 Você pode experimentar a aplicação publicada no link abaixo:
 
-👉 https://onda-finance-7lev0euh5-thiagoaugusto-codes-projects.vercel.app/
+👉 https://onda-finance-web-nine.vercel.app/
 
 
 
