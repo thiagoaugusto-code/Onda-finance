@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useState } from "react";
 
 const transferSchema = z.object({
   amount: z.number().min(0.01, "Valor deve ser maior que 0"),
@@ -18,10 +19,18 @@ type TransferForm = z.infer<typeof transferSchema>;
 export function TransferPage() {
   const { transfer, accounts, currentAccountId } = useAccountStore();
   const navigate = useNavigate();
+  const [insufficientFundsError, setInsufficientFundsError] = useState(false);
 
   const availableAccounts = accounts.filter(a => a.id !== currentAccountId);
+  const currentAccount = accounts.find(a => a.id === currentAccountId);
 
   function onSubmit(data: TransferForm) {
+    if (!currentAccount || data.amount > currentAccount.balance) {
+      setInsufficientFundsError(true);
+      return;
+    }
+
+    setInsufficientFundsError(false);
     transfer(data.amount, data.description, data.toAccountId);
     navigate("/dashboard");
   }
@@ -34,6 +43,19 @@ export function TransferPage() {
           <p className="text-gray-600">Transfira dinheiro entre suas contas</p>
         </CardHeader>
         <CardContent className="space-y-6">
+          {insufficientFundsError && (
+            <div className="bg-red-50 border-2 border-red-200 rounded-lg p-4 text-center">
+              <div className="flex items-center justify-center space-x-2">
+                <div className="w-5 h-5 bg-red-500 rounded-full flex items-center justify-center">
+                  <span className="text-white text-sm font-bold">!</span>
+                </div>
+                <span className="text-red-700 font-semibold text-lg">Saldo insuficiente</span>
+              </div>
+              <p className="text-red-600 text-sm mt-2">
+                O valor solicitado é maior que o saldo disponível na conta atual.
+              </p>
+            </div>
+          )}
           <Form
             schema={transferSchema}
             defaultValues={{ amount: 0, description: "", toAccountId: "" }}
